@@ -1,3 +1,11 @@
-.small-scr {
-  margin: 5px 0;
+.gallery-elem-container {
+  width: 100%;
+}
+.gallery-elem {
+  //min-width: calc(100% - 130px);
+  margin: 50px auto;
+}
+
+.add-more {
+  margin-bottom: 50px;
 }
