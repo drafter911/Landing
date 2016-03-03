@@ -1,0 +1,46 @@
+$border-radius: 3px;
+$sky-blue : #337AB7;
+$white: #fff;
+
+input[type="checkbox"] {
+  opacity: 0;
+  + label.fancy {
+    &.abs {
+      top: 50%;
+      left: 50%;
+      width: 12px;
+      height: 12px;
+      margin: -6px 0 0 -6px;
+    }
+    margin: 0 15px;
+    i {
+      position: relative;
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: $border-radius;
+      cursor: pointer;
+      background-color: $sky-blue;
+      .check {
+        @include transformRotate(38deg);
+        top: 50%;
+        left: 50%;
+        margin: -5px 0 0 -2.9px;
+        width: 6px;
+        height: 8px;
+        border:  2px solid $sky-blue;
+        border-top: none;
+        border-left: none;
+      }
+    }
+  }
+  &:checked {
+    + label.fancy {
+      i {
+        .check {
+          border-color: $white;
+        }
+      }
+    }
+  }
+}

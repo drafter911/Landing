@@ -1,0 +1,21 @@
+<div class="pull-left">
+    <ul id="filters" class="list-inline">
+        <li class="list-group-item">
+            <a class="selected" href="#/">All</a>
+        </li>
+        <li class="list-group-item">
+            <a href="#/active">Opened</a>
+        </li>
+        <li class="list-group-item">
+            <a href="#/completed">Pending</a>
+        </li>
+        <li class="list-group-item">
+            <a href="#/completed">Completed</a>
+        </li>
+    </ul>
+</div>
+<div class="pull-right">
+    <% if ( completed ) { %>
+    <button id="clear-completed" class="btn btn-danger">Hide</button>
+    <% } %>
+</div>

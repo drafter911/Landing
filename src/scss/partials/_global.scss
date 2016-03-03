@@ -1,0 +1,71 @@
+body {
+  font-size: 10px;
+  font-family: "Arial";
+}
+
+.main-wrapper {
+  background: url("/public/images/background.jpg") no-repeat center;
+  background-size: 100% 100%;
+}
+
+#content {
+  font-size: 0;
+}
+
+.gallery-elem {
+  max-width: 300px;
+  margin: 25px;
+  padding: 20px 20px 30px;
+  font-size: 10px;
+  background-color: $white;
+  img {
+    display: block;
+    width: 100%;
+  }
+}
+
+.rate {
+  padding-top: 12px;
+  font-size: 0;
+}
+
+.star {
+  width: 10px;
+  height: 10px;
+  margin-right: 2px;
+  background: url("/public/images/sprites.png") no-repeat 0 0;
+  &:last-child {
+    margin-right: 0;
+  }
+  &.black-star {
+    background-position: -20px 0;
+  }
+}
+
+.item-title {
+  padding: 6px 0;
+  font-size: 1.2em;
+  line-height: 2em;
+  color: $black;
+  text-transform: uppercase;
+}
+
+.item-description {
+  font-size: 1.1em;
+  line-height: 1.3em;
+  color: $gray;
+}
+
+.add-more {
+  padding: 0 20px;
+  border: 2px solid darken($white, 30);
+  border-radius: 5px;
+  line-height: 48px;
+  color: darken($white, 30);
+  text-transform: uppercase;
+  background: transparent;
+  &:hover {
+    color: $white;
+    border-color: $white;
+  }
+}
