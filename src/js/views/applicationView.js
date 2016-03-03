@@ -19,9 +19,10 @@ export default Backbone.View.extend({
 
     initialize: function () {
         console.log(this);
-        $(window).on('resize', this.someFunc);
-        //_.bindAll(this, 'infinitScroll');
-        //$('#content').scroll(this.infinitScroll);
+        if($(window).width() < 640 ) {
+            this.someFunc();
+        }
+        $(window).bind("resize.app", _.bind(this.someFunc, this));
         this.$body = $('.gallery');
         var view = new ItemView();
         //this.$body.append(view.render().el);
@@ -47,10 +48,13 @@ export default Backbone.View.extend({
         }
     },
     someFunc: function() {
-        var that = this;
         console.log($(window).width());
         if($(window).width() < 640 ) {
-            that.initialize();
+            $('#content').bind("scroll", _.bind(this.infinitScroll, this));
+        }
+        else {
+            $('#content').unbind("scroll");
+            console.log('unbinded');
         }
     }
 });
