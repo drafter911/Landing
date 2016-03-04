@@ -13408,117 +13408,70 @@
 
 	exports['default'] = Backbone.View.extend({
 
-	    el: '#task-manager',
+	    el: '#content',
 	    //template: _.template(controlsTemplate),
 	    template: _import2['default'].template(_tpl2['default']),
 
-	    events: {},
+	    events: {
+	        'click .add-more': 'addOne'
+	    },
 
 	    initialize: function initialize() {
-	        this.$body = _$2['default']('#content');
+	        _List2['default'].fetch({ reset: true });
+	        //List.bind('reset', function () { console.log(List.toJSON()); });
+	        //List.fetch({reset: true});
+	        this.$window = _$2['default'](window);
+	        this.$content = _$2['default'](this.el);
+	        this.$gallery = _$2['default']('.gallery');
+
+	        if (this.checkScreenSize()) {
+	            this.someFunc();
+	        }
+	        this.$window.bind('resize.app', _import2['default'].bind(this.someFunc, this));
 	        var view = new _ItemView2['default']();
 	        //this.$body.append(view.render().el);
+	        //this.render();
+	        //this.render();
+	        //this.render();
+	        this.listenTo(_List2['default'], 'reset', this.render);
+	    },
+
+	    render: function render(params) {
+	        this.addOne();
+	        console.log(params);
 	        for (var i = 1; i < 4; i++) {
-	            this.$body.append(this.template);
+	            this.$gallery.append(this.template);
 	        }
 	    },
 
-	    render: function render() {},
+	    //serializeData: function(params) {
+	    //    console.log(this.collection);
+	    //},
 
-	    addOne: function addOne(todo) {},
-
-	    addAll: function addAll() {
-	        this.$todoList.empty();
-	        _List2['default'].each(this.addOne, this);
+	    checkScreenSize: function checkScreenSize() {
+	        return this.$window.width() < 640;
 	    },
 
-	    filterOne: function filterOne(todo) {
-	        todo.trigger('visible');
+	    addOne: function addOne(todo) {
+	        //this.render();
+	        var view = new _ItemView2['default']({ model: todo });
+	        this.$gallery.append(view.render().el);
 	    },
 
-	    filterAll: function filterAll() {
-	        _List2['default'].each(this.filterOne, this);
-	    },
-
-	    newAttributes: function newAttributes() {
-	        var date = new Date(),
-	            newDate = date.getMonth() + 1 + '.' + date.getDate() + '.' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes();
-
-	        return {
-	            title: this.$taskTitle.val().trim(),
-	            description: this.$taskDescription.val().trim(),
-	            order: _List2['default'].nextOrder(),
-	            completed: false,
-	            priority: this.$priority.text(),
-	            createdAt: newDate,
-	            deadLine: this.$deadDate.val() + ' ' + this.$deadHour.text() + ':' + this.$deadMinutes.text()
-	        };
-	    },
-
-	    createTask: function createTask(e) {
-	        if (!this.$taskDescription.val().trim()) {
-	            return;
+	    infinitScroll: function infinitScroll() {
+	        if (this.$content.scrollTop() + this.$content.innerHeight() >= this.$content[0].scrollHeight) {
+	            this.addOne();
 	        }
-	        this.createNewTask();
 	    },
-
-	    createOnEnter: function createOnEnter(e) {
-	        if (e.which !== _Common2['default'].ENTER_KEY || !this.$taskDescription.val().trim()) {
-	            return;
+	    someFunc: function someFunc() {
+	        if (this.checkScreenSize()) {
+	            this.$content.bind('scroll', _import2['default'].bind(this.infinitScroll, this));
+	        } else {
+	            this.$content.unbind('scroll');
 	        }
-	        this.createNewTask();
-	    },
-
-	    createNewTask: function createNewTask() {
-	        _List2['default'].create(this.newAttributes());
-	        this.$taskDescription.val('');
-	        this.$taskTitle.val('');
-	    },
-
-	    clearCompleted: function clearCompleted() {
-	        _import2['default'].invoke(_List2['default'].completed(), 'destroy');
-	        return false;
-	    },
-
-	    toggleAllComplete: function toggleAllComplete() {
-	        var completed = this.allCheckbox.checked;
-
-	        _List2['default'].each(function (todo) {
-	            todo.save({
-	                completed: completed
-	            });
-	        });
 	    }
 	});
 	module.exports = exports['default'];
-
-	//var view = new ItemView();
-	//this.$body.append(view.render().el);
-	//var completed = List.completed().length;
-	//var remaining = List.remaining().length;
-	//
-	//if (List.length) {
-	//    this.$main.show();
-	//    this.$filterPanel.show();
-	//
-	//    this.$filterPanel.html(this.template({
-	//        completed: completed,
-	//        remaining: remaining
-	//    }));
-	//
-	//    this.$('#filters li a')
-	//        .removeClass('selected')
-	//        .filter('[href="#/' + (Common.TodoFilter || '') + '"]')
-	//        .addClass('selected');
-	//} else {
-	//    this.$main.hide();
-	//    this.$filterPanel.hide();
-	//}
-	//
-	//this.allCheckbox.checked = !remaining;
-
-	//var view = new ItemView({model: todo});
-	//this.$todoList.append(view.render().el);
 
 /***/ },
 /* 5 */
@@ -13540,10 +13493,6 @@
 
 	var _Backbone2 = _interopRequireDefault(_Backbone);
 
-	var _localStorage = __webpack_require__(6);
-
-	var _localStorage2 = _interopRequireDefault(_localStorage);
-
 	var _Item = __webpack_require__(7);
 
 	var _Item2 = _interopRequireDefault(_Item);
@@ -13551,291 +13500,14 @@
 	var BB = _Backbone2['default'].Collection.extend({
 
 	    model: _Item2['default'],
-	    localStorage: new Store('todos-backbone'),
-
-	    completed: function completed() {
-	        return this.where({ completed: true });
-	    },
-
-	    remaining: function remaining() {
-	        return this.where({ completed: false });
-	    },
-
-	    nextOrder: function nextOrder() {
-	        return this.length ? this.last().get('order') + 1 : 1;
-	    },
-
-	    comparator: 'order'
+	    url: '/data/items.json'
 	});
 
 	exports['default'] = new BB();
 	module.exports = exports['default'];
 
 /***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Backbone localStorage Adapter
-	 * Version 1.1.16
-	 *
-	 * https://github.com/jeromegn/Backbone.localStorage
-	 */
-	(function (root, factory) {
-	  if (true) {
-	    module.exports = factory(__webpack_require__(1));
-	  } else if (typeof define === "function" && define.amd) {
-	    // AMD. Register as an anonymous module.
-	    define(["backbone"], function(Backbone) {
-	      // Use global variables if the locals are undefined.
-	      return factory(Backbone || root.Backbone);
-	    });
-	  } else {
-	    factory(Backbone);
-	  }
-	}(this, function(Backbone) {
-	// A simple module to replace `Backbone.sync` with *localStorage*-based
-	// persistence. Models are given GUIDS, and saved into a JSON object. Simple
-	// as that.
-
-	// Generate four random hex digits.
-	function S4() {
-	   return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-	};
-
-	// Generate a pseudo-GUID by concatenating random hexadecimal.
-	function guid() {
-	   return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
-	};
-
-	function isObject(item) {
-	  return item === Object(item);
-	}
-
-	function contains(array, item) {
-	  var i = array.length;
-	  while (i--) if (array[i] === item) return true;
-	  return false;
-	}
-
-	function extend(obj, props) {
-	  for (var key in props) obj[key] = props[key]
-	  return obj;
-	}
-
-	function result(object, property) {
-	    if (object == null) return void 0;
-	    var value = object[property];
-	    return (typeof value === 'function') ? object[property]() : value;
-	}
-
-	// Our Store is represented by a single JS object in *localStorage*. Create it
-	// with a meaningful name, like the name you'd give a table.
-	// window.Store is deprectated, use Backbone.LocalStorage instead
-	Backbone.LocalStorage = window.Store = function(name, serializer) {
-	  if( !this.localStorage ) {
-	    throw "Backbone.localStorage: Environment does not support localStorage."
-	  }
-	  this.name = name;
-	  this.serializer = serializer || {
-	    serialize: function(item) {
-	      return isObject(item) ? JSON.stringify(item) : item;
-	    },
-	    // fix for "illegal access" error on Android when JSON.parse is passed null
-	    deserialize: function (data) {
-	      return data && JSON.parse(data);
-	    }
-	  };
-	  var store = this.localStorage().getItem(this.name);
-	  this.records = (store && store.split(",")) || [];
-	};
-
-	extend(Backbone.LocalStorage.prototype, {
-
-	  // Save the current state of the **Store** to *localStorage*.
-	  save: function() {
-	    this.localStorage().setItem(this.name, this.records.join(","));
-	  },
-
-	  // Add a model, giving it a (hopefully)-unique GUID, if it doesn't already
-	  // have an id of it's own.
-	  create: function(model) {
-	    if (!model.id && model.id !== 0) {
-	      model.id = guid();
-	      model.set(model.idAttribute, model.id);
-	    }
-	    this.localStorage().setItem(this._itemName(model.id), this.serializer.serialize(model));
-	    this.records.push(model.id.toString());
-	    this.save();
-	    return this.find(model);
-	  },
-
-	  // Update a model by replacing its copy in `this.data`.
-	  update: function(model) {
-	    this.localStorage().setItem(this._itemName(model.id), this.serializer.serialize(model));
-	    var modelId = model.id.toString();
-	    if (!contains(this.records, modelId)) {
-	      this.records.push(modelId);
-	      this.save();
-	    }
-	    return this.find(model);
-	  },
-
-	  // Retrieve a model from `this.data` by id.
-	  find: function(model) {
-	    return this.serializer.deserialize(this.localStorage().getItem(this._itemName(model.id)));
-	  },
-
-	  // Return the array of all models currently in storage.
-	  findAll: function() {
-	    var result = [];
-	    for (var i = 0, id, data; i < this.records.length; i++) {
-	      id = this.records[i];
-	      data = this.serializer.deserialize(this.localStorage().getItem(this._itemName(id)));
-	      if (data != null) result.push(data);
-	    }
-	    return result;
-	  },
-
-	  // Delete a model from `this.data`, returning it.
-	  destroy: function(model) {
-	    this.localStorage().removeItem(this._itemName(model.id));
-	    var modelId = model.id.toString();
-	    for (var i = 0, id; i < this.records.length; i++) {
-	      if (this.records[i] === modelId) {
-	        this.records.splice(i, 1);
-	      }
-	    }
-	    this.save();
-	    return model;
-	  },
-
-	  localStorage: function() {
-	    return localStorage;
-	  },
-
-	  // Clear localStorage for specific collection.
-	  _clear: function() {
-	    var local = this.localStorage(),
-	      itemRe = new RegExp("^" + this.name + "-");
-
-	    // Remove id-tracking item (e.g., "foo").
-	    local.removeItem(this.name);
-
-	    // Match all data items (e.g., "foo-ID") and remove.
-	    for (var k in local) {
-	      if (itemRe.test(k)) {
-	        local.removeItem(k);
-	      }
-	    }
-
-	    this.records.length = 0;
-	  },
-
-	  // Size of localStorage.
-	  _storageSize: function() {
-	    return this.localStorage().length;
-	  },
-
-	  _itemName: function(id) {
-	    return this.name+"-"+id;
-	  }
-
-	});
-
-	// localSync delegate to the model or collection's
-	// *localStorage* property, which should be an instance of `Store`.
-	// window.Store.sync and Backbone.localSync is deprecated, use Backbone.LocalStorage.sync instead
-	Backbone.LocalStorage.sync = window.Store.sync = Backbone.localSync = function(method, model, options) {
-	  var store = result(model, 'localStorage') || result(model.collection, 'localStorage');
-
-	  var resp, errorMessage;
-	  //If $ is having Deferred - use it.
-	  var syncDfd = Backbone.$ ?
-	    (Backbone.$.Deferred && Backbone.$.Deferred()) :
-	    (Backbone.Deferred && Backbone.Deferred());
-
-	  try {
-
-	    switch (method) {
-	      case "read":
-	        resp = model.id != undefined ? store.find(model) : store.findAll();
-	        break;
-	      case "create":
-	        resp = store.create(model);
-	        break;
-	      case "update":
-	        resp = store.update(model);
-	        break;
-	      case "delete":
-	        resp = store.destroy(model);
-	        break;
-	    }
-
-	  } catch(error) {
-	    if (error.code === 22 && store._storageSize() === 0)
-	      errorMessage = "Private browsing is unsupported";
-	    else
-	      errorMessage = error.message;
-	  }
-
-	  if (resp) {
-	    if (options && options.success) {
-	      if (Backbone.VERSION === "0.9.10") {
-	        options.success(model, resp, options);
-	      } else {
-	        options.success(resp);
-	      }
-	    }
-	    if (syncDfd) {
-	      syncDfd.resolve(resp);
-	    }
-
-	  } else {
-	    errorMessage = errorMessage ? errorMessage
-	                                : "Record Not Found";
-
-	    if (options && options.error)
-	      if (Backbone.VERSION === "0.9.10") {
-	        options.error(model, errorMessage, options);
-	      } else {
-	        options.error(errorMessage);
-	      }
-
-	    if (syncDfd)
-	      syncDfd.reject(errorMessage);
-	  }
-
-	  // add compatibility with $.ajax
-	  // always execute callback for success and error
-	  if (options && options.complete) options.complete(resp);
-
-	  return syncDfd && syncDfd.promise();
-	};
-
-	Backbone.ajaxSync = Backbone.sync;
-
-	Backbone.getSyncMethod = function(model, options) {
-	  var forceAjaxSync = options && options.ajaxSync;
-
-	  if(!forceAjaxSync && (result(model, 'localStorage') || result(model.collection, 'localStorage'))) {
-	    return Backbone.localSync;
-	  }
-
-	  return Backbone.ajaxSync;
-	};
-
-	// Override 'Backbone.sync' to default to localSync,
-	// the original 'Backbone.sync' is still available in 'Backbone.ajaxSync'
-	Backbone.sync = function(method, model, options) {
-	  return Backbone.getSyncMethod(model, options).apply(this, [method, model, options]);
-	};
-
-	return Backbone.LocalStorage;
-	}));
-
-
-/***/ },
+/* 6 */,
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -13854,17 +13526,8 @@
 	exports['default'] = _Backbone2['default'].Model.extend({
 	    defaults: {
 	        title: '',
-	        description: '',
-	        completed: false,
-	        priority: '',
-	        createdAt: null,
-	        deadLine: null
-	    },
-
-	    toggle: function toggle() {
-	        this.save({
-	            completed: !this.get('completed')
-	        });
+	        paragraph: '',
+	        image: null
 	    }
 	});
 	module.exports = exports['default'];
@@ -13905,78 +13568,30 @@
 
 	exports['default'] = Backbone.View.extend({
 
-	    tagName: 'li',
+	    tagName: 'div',
 
-	    el: '#ul',
+	    el: '#content',
 
-	    className: 'rel panel panel-primary',
+	    className: 'gallery-elem-container pull-left',
 
 	    template: _import2['default'].template(_itemTemplate2['default']),
 
 	    events: {},
 
-	    initialize: function initialize() {},
+	    initialize: function initialize() {
+	        console.log(this.model);
+	        this.listenTo(this.model, 'change', this.render);
+	    },
 
 	    render: function render() {
-	        //this.el.html(this.template);
+	        alert('!');
+	        this.el.html(this.template);
 	        //this.$el.toggleClass('completed', this.model.get('completed'));
-	        //
+
 	        //this.toggleVisible();
 	        //this.$taskDescription = this.$('.edit');
-	        //return this;
-	        return this.template;
-	    },
-
-	    toggleVisible: function toggleVisible() {
-	        this.$el.toggleClass('hidden', this.isHidden());
-	    },
-
-	    isHidden: function isHidden() {
-	        var isCompleted = this.model.get('completed');
-	        return !isCompleted && _Common2['default'].TodoFilter === 'completed' || isCompleted && _Common2['default'].TodoFilter === 'active';
-	    },
-
-	    toggleCompleted: function toggleCompleted() {
-	        this.model.toggle();
-	    },
-
-	    edit: function edit() {
-	        this.$el.addClass('editing');
-	        this.$taskDescription.focus();
-	    },
-
-	    close: function close() {
-	        var value = this.$taskDescription.val();
-	        var trimmedValue = value.trim();
-
-	        if (trimmedValue) {
-	            this.model.save({ title: trimmedValue });
-
-	            if (value !== trimmedValue) {
-	                this.model.trigger('change');
-	            }
-	        } else {
-	            this.clear();
-	        }
-
-	        this.$el.removeClass('editing');
-	    },
-
-	    updateOnEnter: function updateOnEnter(e) {
-	        if (e.keyCode === _Common2['default'].ENTER_KEY) {
-	            this.close();
-	        }
-	    },
-
-	    revertOnEscape: function revertOnEscape(e) {
-	        if (e.which === _Common2['default'].ESCAPE_KEY) {
-	            this.$el.removeClass('editing');
-	            this.$taskDescription.val(this.model.get('title'));
-	        }
-	    },
-
-	    clear: function clear() {
-	        this.model.destroy();
+	        return this;
+	        //return this.template;
 	    }
 	});
 	module.exports = exports['default'];
@@ -13985,7 +13600,7 @@
 /* 9 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"gallery-elem-container pull-left\">\r\n    <div class=\"gallery-elem\">\r\n        <img src=\"/public/images/img1.jpg\" alt=\"img1\"/>\r\n        <div class=\"rate text-center\">\r\n            <span class=\"star black-star inline-block\"></span>\r\n            <span class=\"star black-star inline-block\"></span>\r\n            <span class=\"star black-star inline-block\"></span>\r\n            <span class=\"star inline-block\"></span>\r\n            <span class=\"star inline-block\"></span>\r\n        </div>\r\n        <h6 class=\"item-title text-center font-light\">NEW ZEALAND TIMELAPSE</h6>\r\n        <p class=\"item-description\">\r\n            Equip? de son appareil Canon 5D Mark II, le r?alis\r\n            ateur Bevan Percival nous offre une nouvelle vid?o\r\n            en  technique timelapse absolument magnifique\r\n        </p>\r\n    </div>\r\n</div>";
+	module.exports = "<div class=\"gallery-elem-container pull-left\">\r\n    <div class=\"gallery-elem center-block\">\r\n        <img src=\"/public/images/img1.jpg\" alt=\"img1\"/>\r\n        <div class=\"rate text-center\">\r\n            <span class=\"star black-star inline-block\"></span>\r\n            <span class=\"star black-star inline-block\"></span>\r\n            <span class=\"star black-star inline-block\"></span>\r\n            <span class=\"star inline-block\"></span>\r\n            <span class=\"star inline-block\"></span>\r\n        </div>\r\n        <%=this%>\r\n        <h6 class=\"item-title text-center font-light\">NEW ZEALAND TIMELAPSE</h6>\r\n        <p class=\"item-description\">\r\n            Equip? de son appareil Canon 5D Mark II, le r?alis\r\n            ateur Bevan Percival nous offre une nouvelle vid?o\r\n            en  technique timelapse absolument magnifique\r\n        </p>\r\n    </div>\r\n</div>";
 
 /***/ },
 /* 10 */
@@ -14043,12 +13658,11 @@
 
 	exports['default'] = Backbone.Router.extend({
 	    routes: {
-	        '*filter': 'setFilter'
+	        '/': 'initList'
 	    },
 
-	    setFilter: function setFilter(param) {
-	        _Common2['default'].TodoFilter = param || '';
-	        _Todos2['default'].trigger('filter');
+	    initList: function initList() {
+	        List.fetch({ reset: true });
 	    }
 	});
 	module.exports = exports['default'];

@@ -6,11 +6,10 @@ import Common from './common';
 
 export default Backbone.Router.extend({
     routes: {
-        '*filter': 'setFilter'
+        '/': 'initList'
     },
 
-    setFilter: function (param) {
-        Common.TodoFilter = param || '';
-        Todos.trigger('filter');
+    initList: function () {
+        List.fetch({reset: true});
     }
 });

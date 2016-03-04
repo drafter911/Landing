@@ -9,7 +9,7 @@ import tpl from '../templates/Item/item.html';
 
 export default Backbone.View.extend({
 
-    el: 'body',
+    el: '#content',
     //template: _.template(controlsTemplate),
     template: _.template(tpl),
 
@@ -18,43 +18,58 @@ export default Backbone.View.extend({
     },
 
     initialize: function () {
-        console.log(this);
-        if($(window).width() < 640 ) {
+        List.fetch({reset: true});
+        //List.bind('reset', function () { console.log(List.toJSON()); });
+        //List.fetch({reset: true});
+        this.$window = $(window);
+        this.$content = $(this.el);
+        this.$gallery = $('.gallery');
+
+        if(this.checkScreenSize()) {
             this.someFunc();
         }
-        $(window).bind("resize.app", _.bind(this.someFunc, this));
-        this.$body = $('.gallery');
+        this.$window.bind("resize.app", _.bind(this.someFunc, this));
         var view = new ItemView();
         //this.$body.append(view.render().el);
-        this.render();
-
+        //this.render();
+        //this.render();
+        //this.render();
+        this.listenTo(List, 'reset', this.render);
     },
 
-    render: function () {
+    render: function (params) {
+        this.addOne();
+        console.log(params);
         for(let i=1; i<4; i++){
-            this.$body.append(this.template);
+            this.$gallery.append(this.template);
         }
+    },
+
+    //serializeData: function(params) {
+    //    console.log(this.collection);
+    //},
+
+    checkScreenSize: function() {
+        return this.$window.width() < 640
     },
 
     addOne: function (todo) {
-        this.render();
-        //var view = new ItemView({model: todo});
-        //this.$todoList.append(view.render().el);
+        //this.render();
+        var view = new ItemView({model: todo});
+        this.$gallery.append(view.render().el);
     },
 
     infinitScroll: function() {
-        if($('#content').scrollTop() + $('#content').innerHeight() >= $('#content')[0].scrollHeight){
+        if(this.$content.scrollTop() + this.$content.innerHeight() >= this.$content[0].scrollHeight){
            this.addOne();
         }
     },
     someFunc: function() {
-        console.log($(window).width());
-        if($(window).width() < 640 ) {
-            $('#content').bind("scroll", _.bind(this.infinitScroll, this));
+        if(this.checkScreenSize()) {
+            this.$content.bind("scroll", _.bind(this.infinitScroll, this));
         }
         else {
-            $('#content').unbind("scroll");
-            console.log('unbinded');
+            this.$content.unbind("scroll");
         }
     }
 });
