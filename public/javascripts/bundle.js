@@ -58,12 +58,6 @@
 
 	var _AppView2 = _interopRequireDefault(_AppView);
 
-	var _AppRouter = __webpack_require__(12);
-
-	var _AppRouter2 = _interopRequireDefault(_AppRouter);
-
-	new _AppRouter2['default']();
-
 	Backbone.history.start();
 
 	new _AppView2['default']();
@@ -74,7 +68,7 @@
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global) {//     Backbone.js 1.2.3
 
-	//     (c) 2010-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+	//     (c) 2010-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	//     Backbone may be freely distributed under the MIT license.
 	//     For all details and documentation:
 	//     http://backbonejs.org
@@ -83,8 +77,8 @@
 
 	  // Establish the root object, `window` (`self`) in the browser, or `global` on the server.
 	  // We use `self` instead of `window` for `WebWorker` support.
-	  var root = (typeof self == 'object' && self.self == self && self) ||
-	            (typeof global == 'object' && global.global == global && global);
+	  var root = (typeof self == 'object' && self.self === self && self) ||
+	            (typeof global == 'object' && global.global === global && global);
 
 	  // Set up Backbone appropriately for the environment. Start with AMD.
 	  if (true) {
@@ -97,7 +91,7 @@
 	  // Next for Node.js or CommonJS. jQuery may not be needed as a module.
 	  } else if (typeof exports !== 'undefined') {
 	    var _ = require('underscore'), $;
-	    try { $ = require('jquery'); } catch(e) {}
+	    try { $ = require('jquery'); } catch (e) {}
 	    factory(root, exports, _, $);
 
 	  // Finally, as a browser global.
@@ -105,7 +99,7 @@
 	    root.Backbone = factory(root, {}, root._, (root.jQuery || root.Zepto || root.ender || root.$));
 	  }
 
-	}(function(root, Backbone, _, $) {
+	})(function(root, Backbone, _, $) {
 
 	  // Initial Setup
 	  // -------------
@@ -220,7 +214,7 @@
 	        events = eventsApi(iteratee, events, names[i], name[names[i]], opts);
 	      }
 	    } else if (name && eventSplitter.test(name)) {
-	      // Handle space separated event names by delegating them individually.
+	      // Handle space-separated event names by delegating them individually.
 	      for (names = name.split(eventSplitter); i < names.length; i++) {
 	        events = iteratee(events, names[i], callback, opts);
 	      }
@@ -240,9 +234,9 @@
 	  // Guard the `listening` argument from the public API.
 	  var internalOn = function(obj, name, callback, context, listening) {
 	    obj._events = eventsApi(onApi, obj._events || {}, name, callback, {
-	        context: context,
-	        ctx: obj,
-	        listening: listening
+	      context: context,
+	      ctx: obj,
+	      listening: listening
 	    });
 
 	    if (listening) {
@@ -256,7 +250,7 @@
 	  // Inversion-of-control versions of `on`. Tell *this* object to listen to
 	  // an event in another object... keeping track of what it's listening to
 	  // for easier unbinding later.
-	  Events.listenTo =  function(obj, name, callback) {
+	  Events.listenTo = function(obj, name, callback) {
 	    if (!obj) return this;
 	    var id = obj._listenId || (obj._listenId = _.uniqueId('l'));
 	    var listeningTo = this._listeningTo || (this._listeningTo = {});
@@ -281,7 +275,7 @@
 	      var context = options.context, ctx = options.ctx, listening = options.listening;
 	      if (listening) listening.count++;
 
-	      handlers.push({ callback: callback, context: context, ctx: context || ctx, listening: listening });
+	      handlers.push({callback: callback, context: context, ctx: context || ctx, listening: listening});
 	    }
 	    return events;
 	  };
@@ -290,18 +284,18 @@
 	  // callbacks with that function. If `callback` is null, removes all
 	  // callbacks for the event. If `name` is null, removes all bound
 	  // callbacks for all events.
-	  Events.off =  function(name, callback, context) {
+	  Events.off = function(name, callback, context) {
 	    if (!this._events) return this;
 	    this._events = eventsApi(offApi, this._events, name, callback, {
-	        context: context,
-	        listeners: this._listeners
+	      context: context,
+	      listeners: this._listeners
 	    });
 	    return this;
 	  };
 
 	  // Tell this object to stop listening to either specific events ... or
 	  // to every object it's currently listening to.
-	  Events.stopListening =  function(obj, name, callback) {
+	  Events.stopListening = function(obj, name, callback) {
 	    var listeningTo = this._listeningTo;
 	    if (!listeningTo) return this;
 
@@ -316,7 +310,6 @@
 
 	      listening.obj.off(name, callback, this);
 	    }
-	    if (_.isEmpty(listeningTo)) this._listeningTo = void 0;
 
 	    return this;
 	  };
@@ -373,21 +366,21 @@
 	        delete events[name];
 	      }
 	    }
-	    if (_.size(events)) return events;
+	    return events;
 	  };
 
 	  // Bind an event to only be triggered a single time. After the first time
 	  // the callback is invoked, its listener will be removed. If multiple events
 	  // are passed in using the space-separated syntax, the handler will fire
 	  // once for each event, not once for a combination of all events.
-	  Events.once =  function(name, callback, context) {
+	  Events.once = function(name, callback, context) {
 	    // Map the event into a `{event: once}` object.
 	    var events = eventsApi(onceMap, {}, name, callback, _.bind(this.off, this));
-	    return this.on(events, void 0, context);
+	    return this.on(events, callback, context);
 	  };
 
 	  // Inversion-of-control versions of `once`.
-	  Events.listenToOnce =  function(obj, name, callback) {
+	  Events.listenToOnce = function(obj, name, callback) {
 	    // Map the event into a `{event: once}` object.
 	    var events = eventsApi(onceMap, {}, name, callback, _.bind(this.stopListening, this, obj));
 	    return this.listenTo(obj, events);
@@ -410,7 +403,7 @@
 	  // passed the same arguments as `trigger` is, apart from the event name
 	  // (unless you're listening on `"all"`, which will cause your callback to
 	  // receive the true name of the event as the first argument).
-	  Events.trigger =  function(name) {
+	  Events.trigger = function(name) {
 	    if (!this._events) return this;
 
 	    var length = Math.max(0, arguments.length - 1);
@@ -422,7 +415,7 @@
 	  };
 
 	  // Handles triggering the appropriate event callbacks.
-	  var triggerApi = function(objEvents, name, cb, args) {
+	  var triggerApi = function(objEvents, name, callback, args) {
 	    if (objEvents) {
 	      var events = objEvents[name];
 	      var allEvents = objEvents.all;
@@ -472,7 +465,8 @@
 	    this.attributes = {};
 	    if (options.collection) this.collection = options.collection;
 	    if (options.parse) attrs = this.parse(attrs, options) || {};
-	    attrs = _.defaults({}, attrs, _.result(this, 'defaults'));
+	    var defaults = _.result(this, 'defaults');
+	    attrs = _.defaults(_.extend({}, defaults, attrs), defaults);
 	    this.set(attrs, options);
 	    this.changed = {};
 	    this.initialize.apply(this, arguments);
@@ -580,7 +574,7 @@
 	      }
 
 	      // Update the `id`.
-	      this.id = this.get(this.idAttribute);
+	      if (this.idAttribute in attrs) this.id = this.get(this.idAttribute);
 
 	      // Trigger all relevant attribute changes.
 	      if (!silent) {
@@ -693,8 +687,8 @@
 	      // the model will be valid when the attributes, if any, are set.
 	      if (attrs && !wait) {
 	        if (!this.set(attrs, options)) return false;
-	      } else {
-	        if (!this._validate(attrs, options)) return false;
+	      } else if (!this._validate(attrs, options)) {
+	        return false;
 	      }
 
 	      // After a successful server-side save, the client is (optionally)
@@ -788,7 +782,7 @@
 
 	    // Check if the model is currently in a valid state.
 	    isValid: function(options) {
-	      return this._validate({}, _.defaults({validate: true}, options));
+	      return this._validate({}, _.extend({}, options, {validate: true}));
 	    },
 
 	    // Run validation against the next complete set of model attributes,
@@ -806,8 +800,8 @@
 
 	  // Underscore methods that we want to implement on the Model, mapped to the
 	  // number of arguments they take.
-	  var modelMethods = { keys: 1, values: 1, pairs: 1, invert: 1, pick: 0,
-	      omit: 0, chain: 1, isEmpty: 1 };
+	  var modelMethods = {keys: 1, values: 1, pairs: 1, invert: 1, pick: 0,
+	      omit: 0, chain: 1, isEmpty: 1};
 
 	  // Mix in each Underscore method as a proxy to `Model#attributes`.
 	  addUnderscoreMethods(Model, modelMethods, 'attributes');
@@ -843,7 +837,8 @@
 	    at = Math.min(Math.max(at, 0), array.length);
 	    var tail = Array(array.length - at);
 	    var length = insert.length;
-	    for (var i = 0; i < tail.length; i++) tail[i] = array[i + at];
+	    var i;
+	    for (i = 0; i < tail.length; i++) tail[i] = array[i + at];
 	    for (i = 0; i < length; i++) array[i + at] = insert[i];
 	    for (i = 0; i < tail.length; i++) array[i + length + at] = tail[i];
 	  };
@@ -881,9 +876,12 @@
 	    remove: function(models, options) {
 	      options = _.extend({}, options);
 	      var singular = !_.isArray(models);
-	      models = singular ? [models] : _.clone(models);
+	      models = singular ? [models] : models.slice();
 	      var removed = this._removeModels(models, options);
-	      if (!options.silent && removed) this.trigger('update', this, options);
+	      if (!options.silent && removed.length) {
+	        options.changes = {added: [], merged: [], removed: removed};
+	        this.trigger('update', this, options);
+	      }
 	      return singular ? removed[0] : removed;
 	    },
 
@@ -894,18 +892,22 @@
 	    set: function(models, options) {
 	      if (models == null) return;
 
-	      options = _.defaults({}, options, setOptions);
-	      if (options.parse && !this._isModel(models)) models = this.parse(models, options);
+	      options = _.extend({}, setOptions, options);
+	      if (options.parse && !this._isModel(models)) {
+	        models = this.parse(models, options) || [];
+	      }
 
 	      var singular = !_.isArray(models);
 	      models = singular ? [models] : models.slice();
 
 	      var at = options.at;
 	      if (at != null) at = +at;
+	      if (at > this.length) at = this.length;
 	      if (at < 0) at += this.length + 1;
 
 	      var set = [];
 	      var toAdd = [];
+	      var toMerge = [];
 	      var toRemove = [];
 	      var modelMap = {};
 
@@ -914,13 +916,13 @@
 	      var remove = options.remove;
 
 	      var sort = false;
-	      var sortable = this.comparator && (at == null) && options.sort !== false;
+	      var sortable = this.comparator && at == null && options.sort !== false;
 	      var sortAttr = _.isString(this.comparator) ? this.comparator : null;
 
 	      // Turn bare objects into model references, and prevent invalid models
 	      // from being added.
-	      var model;
-	      for (var i = 0; i < models.length; i++) {
+	      var model, i;
+	      for (i = 0; i < models.length; i++) {
 	        model = models[i];
 
 	        // If a duplicate is found, prevent it from being added and
@@ -931,6 +933,7 @@
 	            var attrs = this._isModel(model) ? model.attributes : model;
 	            if (options.parse) attrs = existing.parse(attrs, options);
 	            existing.set(attrs, options);
+	            toMerge.push(existing);
 	            if (sortable && !sort) sort = existing.hasChanged(sortAttr);
 	          }
 	          if (!modelMap[existing.cid]) {
@@ -964,8 +967,8 @@
 	      var orderChanged = false;
 	      var replace = !sortable && add && remove;
 	      if (set.length && replace) {
-	        orderChanged = this.length != set.length || _.some(this.models, function(model, index) {
-	          return model !== set[index];
+	        orderChanged = this.length !== set.length || _.some(this.models, function(m, index) {
+	          return m !== set[index];
 	        });
 	        this.models.length = 0;
 	        splice(this.models, set, 0);
@@ -979,7 +982,7 @@
 	      // Silently sort the collection if appropriate.
 	      if (sort) this.sort({silent: true});
 
-	      // Unless silenced, it's time to fire all appropriate add/sort events.
+	      // Unless silenced, it's time to fire all appropriate add/sort/update events.
 	      if (!options.silent) {
 	        for (i = 0; i < toAdd.length; i++) {
 	          if (at != null) options.index = at + i;
@@ -987,7 +990,14 @@
 	          model.trigger('add', model, this, options);
 	        }
 	        if (sort || orderChanged) this.trigger('sort', this, options);
-	        if (toAdd.length || toRemove.length) this.trigger('update', this, options);
+	        if (toAdd.length || toRemove.length || toMerge.length) {
+	          options.changes = {
+	            added: toAdd,
+	            removed: toRemove,
+	            merged: toMerge
+	          };
+	          this.trigger('update', this, options);
+	        }
 	      }
 
 	      // Return the added (or merged) model (or models).
@@ -1037,11 +1047,18 @@
 	      return slice.apply(this.models, arguments);
 	    },
 
-	    // Get a model from the set by id.
+	    // Get a model from the set by id, cid, model object with id or cid
+	    // properties, or an attributes object that is transformed through modelId.
 	    get: function(obj) {
 	      if (obj == null) return void 0;
-	      var id = this.modelId(this._isModel(obj) ? obj.attributes : obj);
-	      return this._byId[obj] || this._byId[id] || this._byId[obj.cid];
+	      return this._byId[obj] ||
+	        this._byId[this.modelId(obj.attributes || obj)] ||
+	        obj.cid && this._byId[obj.cid];
+	    },
+
+	    // Returns `true` if the model is in the collection.
+	    has: function(obj) {
+	      return this.get(obj) != null;
 	    },
 
 	    // Get the model at the given index.
@@ -1085,7 +1102,7 @@
 
 	    // Pluck an attribute from each model in the collection.
 	    pluck: function(attr) {
-	      return _.invoke(this.models, 'get', attr);
+	      return this.map(attr + '');
 	    },
 
 	    // Fetch the default set of models for this collection, resetting the
@@ -1116,9 +1133,9 @@
 	      if (!wait) this.add(model, options);
 	      var collection = this;
 	      var success = options.success;
-	      options.success = function(model, resp, callbackOpts) {
-	        if (wait) collection.add(model, callbackOpts);
-	        if (success) success.call(callbackOpts.context, model, resp, callbackOpts);
+	      options.success = function(m, resp, callbackOpts) {
+	        if (wait) collection.add(m, callbackOpts);
+	        if (success) success.call(callbackOpts.context, m, resp, callbackOpts);
 	      };
 	      model.save(null, options);
 	      return model;
@@ -1139,7 +1156,7 @@
 	    },
 
 	    // Define how to uniquely identify models in the collection.
-	    modelId: function (attrs) {
+	    modelId: function(attrs) {
 	      return attrs[this.model.prototype.idAttribute || 'id'];
 	    },
 
@@ -1177,6 +1194,12 @@
 	        this.models.splice(index, 1);
 	        this.length--;
 
+	        // Remove references before triggering 'remove' event to prevent an
+	        // infinite loop. #3693
+	        delete this._byId[model.cid];
+	        var id = this.modelId(model.attributes);
+	        if (id != null) delete this._byId[id];
+
 	        if (!options.silent) {
 	          options.index = index;
 	          model.trigger('remove', model, this, options);
@@ -1185,12 +1208,12 @@
 	        removed.push(model);
 	        this._removeReference(model, options);
 	      }
-	      return removed.length ? removed : false;
+	      return removed;
 	    },
 
 	    // Method for checking whether an object should be considered a model for
 	    // the purposes of adding to the collection.
-	    _isModel: function (model) {
+	    _isModel: function(model) {
 	      return model instanceof Model;
 	    },
 
@@ -1216,14 +1239,16 @@
 	    // events simply proxy through. "add" and "remove" events that originate
 	    // in other collections are ignored.
 	    _onModelEvent: function(event, model, collection, options) {
-	      if ((event === 'add' || event === 'remove') && collection !== this) return;
-	      if (event === 'destroy') this.remove(model, options);
-	      if (event === 'change') {
-	        var prevId = this.modelId(model.previousAttributes());
-	        var id = this.modelId(model.attributes);
-	        if (prevId !== id) {
-	          if (prevId != null) delete this._byId[prevId];
-	          if (id != null) this._byId[id] = model;
+	      if (model) {
+	        if ((event === 'add' || event === 'remove') && collection !== this) return;
+	        if (event === 'destroy') this.remove(model, options);
+	        if (event === 'change') {
+	          var prevId = this.modelId(model.previousAttributes());
+	          var id = this.modelId(model.attributes);
+	          if (prevId !== id) {
+	            if (prevId != null) delete this._byId[prevId];
+	            if (id != null) this._byId[id] = model;
+	          }
 	        }
 	      }
 	      this.trigger.apply(this, arguments);
@@ -1234,14 +1259,14 @@
 	  // Underscore methods that we want to implement on the Collection.
 	  // 90% of the core usefulness of Backbone Collections is actually implemented
 	  // right here:
-	  var collectionMethods = { forEach: 3, each: 3, map: 3, collect: 3, reduce: 4,
-	      foldl: 4, inject: 4, reduceRight: 4, foldr: 4, find: 3, detect: 3, filter: 3,
+	  var collectionMethods = {forEach: 3, each: 3, map: 3, collect: 3, reduce: 0,
+	      foldl: 0, inject: 0, reduceRight: 0, foldr: 0, find: 3, detect: 3, filter: 3,
 	      select: 3, reject: 3, every: 3, all: 3, some: 3, any: 3, include: 3, includes: 3,
 	      contains: 3, invoke: 0, max: 3, min: 3, toArray: 1, size: 1, first: 3,
 	      head: 3, take: 3, initial: 3, rest: 3, tail: 3, drop: 3, last: 3,
 	      without: 0, difference: 0, indexOf: 3, shuffle: 1, lastIndexOf: 3,
 	      isEmpty: 1, chain: 1, sample: 3, partition: 3, groupBy: 3, countBy: 3,
-	      sortBy: 3, indexBy: 3};
+	      sortBy: 3, indexBy: 3, findIndex: 3, findLastIndex: 3};
 
 	  // Mix in each Underscore method as a proxy to `Collection#models`.
 	  addUnderscoreMethods(Collection, collectionMethods, 'models');
@@ -1491,9 +1516,9 @@
 	  var methodMap = {
 	    'create': 'POST',
 	    'update': 'PUT',
-	    'patch':  'PATCH',
+	    'patch': 'PATCH',
 	    'delete': 'DELETE',
-	    'read':   'GET'
+	    'read': 'GET'
 	  };
 
 	  // Set the default implementation of `Backbone.ajax` to proxy through to `$`.
@@ -1650,8 +1675,8 @@
 	    // Does the pathname match the root?
 	    matchRoot: function() {
 	      var path = this.decodeFragment(this.location.pathname);
-	      var root = path.slice(0, this.root.length - 1) + '/';
-	      return root === this.root;
+	      var rootPath = path.slice(0, this.root.length - 1) + '/';
+	      return rootPath === this.root;
 	    },
 
 	    // Unicode characters in `location.pathname` are percent encoded so they're
@@ -1723,8 +1748,8 @@
 	        // If we've started off with a route from a `pushState`-enabled
 	        // browser, but we're currently in a browser that doesn't support it...
 	        if (!this._hasPushState && !this.atRoot()) {
-	          var root = this.root.slice(0, -1) || '/';
-	          this.location.replace(root + '#' + this.getPath());
+	          var rootPath = this.root.slice(0, -1) || '/';
+	          this.location.replace(rootPath + '#' + this.getPath());
 	          // Return immediately as browser will do redirect to new url
 	          return true;
 
@@ -1753,7 +1778,7 @@
 	      }
 
 	      // Add a cross-platform `addEventListener` shim for older browsers.
-	      var addEventListener = window.addEventListener || function (eventName, listener) {
+	      var addEventListener = window.addEventListener || function(eventName, listener) {
 	        return attachEvent('on' + eventName, listener);
 	      };
 
@@ -1774,7 +1799,7 @@
 	    // but possibly useful for unit testing Routers.
 	    stop: function() {
 	      // Add a cross-platform `removeEventListener` shim for older browsers.
-	      var removeEventListener = window.removeEventListener || function (eventName, listener) {
+	      var removeEventListener = window.removeEventListener || function(eventName, listener) {
 	        return detachEvent('on' + eventName, listener);
 	      };
 
@@ -1848,11 +1873,11 @@
 	      fragment = this.getFragment(fragment || '');
 
 	      // Don't include a trailing slash on the root.
-	      var root = this.root;
+	      var rootPath = this.root;
 	      if (fragment === '' || fragment.charAt(0) === '?') {
-	        root = root.slice(0, -1) || '/';
+	        rootPath = rootPath.slice(0, -1) || '/';
 	      }
-	      var url = root + fragment;
+	      var url = rootPath + fragment;
 
 	      // Strip the hash and decode for matching.
 	      fragment = this.decodeFragment(fragment.replace(pathStripper, ''));
@@ -1868,7 +1893,7 @@
 	      // fragment to store history.
 	      } else if (this._wantsHashChange) {
 	        this._updateHash(this.location, fragment, options.replace);
-	        if (this.iframe && (fragment !== this.getHash(this.iframe.contentWindow))) {
+	        if (this.iframe && fragment !== this.getHash(this.iframe.contentWindow)) {
 	          var iWindow = this.iframe.contentWindow;
 
 	          // Opening and closing the iframe tricks IE7 and earlier to push a
@@ -1930,14 +1955,9 @@
 	    _.extend(child, parent, staticProps);
 
 	    // Set the prototype chain to inherit from `parent`, without calling
-	    // `parent` constructor function.
-	    var Surrogate = function(){ this.constructor = child; };
-	    Surrogate.prototype = parent.prototype;
-	    child.prototype = new Surrogate;
-
-	    // Add prototype properties (instance properties) to the subclass,
-	    // if supplied.
-	    if (protoProps) _.extend(child.prototype, protoProps);
+	    // `parent`'s constructor function and add the prototype properties.
+	    child.prototype = _.create(parent.prototype, protoProps);
+	    child.prototype.constructor = child;
 
 	    // Set a convenience property in case the parent's prototype is needed
 	    // later.
@@ -1964,8 +1984,7 @@
 	  };
 
 	  return Backbone;
-
-	}));
+	});
 
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
@@ -13390,80 +13409,51 @@
 
 	var _List2 = _interopRequireDefault(_List);
 
-	var _ItemView = __webpack_require__(8);
+	var _template = __webpack_require__(7);
 
-	var _ItemView2 = _interopRequireDefault(_ItemView);
-
-	var _controlsTemplate = __webpack_require__(11);
-
-	var _controlsTemplate2 = _interopRequireDefault(_controlsTemplate);
-
-	var _Common = __webpack_require__(10);
-
-	var _Common2 = _interopRequireDefault(_Common);
-
-	var _tpl = __webpack_require__(9);
-
-	var _tpl2 = _interopRequireDefault(_tpl);
+	var _template2 = _interopRequireDefault(_template);
 
 	exports['default'] = Backbone.View.extend({
 
-	    el: '#content',
-	    //template: _.template(controlsTemplate),
-	    template: _import2['default'].template(_tpl2['default']),
+	    el: '.main-wrapper',
+	    template: _import2['default'].template(_template2['default']),
 
 	    events: {
-	        'click .add-more': 'addOne'
+	        'click .add-more': 'addItems'
 	    },
 
 	    initialize: function initialize() {
-	        _List2['default'].fetch({ reset: true });
-	        //List.bind('reset', function () { console.log(List.toJSON()); });
-	        //List.fetch({reset: true});
 	        this.$window = _$2['default'](window);
 	        this.$content = _$2['default'](this.el);
 	        this.$gallery = _$2['default']('.gallery');
+	        this.$addBtn = this.$content.find('.add-more');
 
 	        if (this.checkScreenSize()) {
-	            this.someFunc();
+	            this.activateInfiniteScroll();
 	        }
-	        this.$window.bind('resize.app', _import2['default'].bind(this.someFunc, this));
-	        var view = new _ItemView2['default']();
-	        //this.$body.append(view.render().el);
-	        //this.render();
-	        //this.render();
-	        //this.render();
+	        this.$window.bind('resize.app', _import2['default'].bind(this.activateInfiniteScroll, this));
 	        this.listenTo(_List2['default'], 'reset', this.render);
 	    },
 
-	    render: function render(params) {
-	        this.addOne();
-	        console.log(params);
-	        for (var i = 1; i < 4; i++) {
-	            this.$gallery.append(this.template);
-	        }
+	    render: function render(collection) {
+	        this.collection = collection.toJSON();
+	        this.$gallery.append(this.template(this.collection));
 	    },
-
-	    //serializeData: function(params) {
-	    //    console.log(this.collection);
-	    //},
 
 	    checkScreenSize: function checkScreenSize() {
 	        return this.$window.width() < 640;
 	    },
 
-	    addOne: function addOne(todo) {
-	        //this.render();
-	        var view = new _ItemView2['default']({ model: todo });
-	        this.$gallery.append(view.render().el);
+	    addItems: function addItems() {
+	        this.render(_List2['default']);
 	    },
 
 	    infinitScroll: function infinitScroll() {
 	        if (this.$content.scrollTop() + this.$content.innerHeight() >= this.$content[0].scrollHeight) {
-	            this.addOne();
+	            this.addItems();
 	        }
 	    },
-	    someFunc: function someFunc() {
+	    activateInfiniteScroll: function activateInfiniteScroll() {
 	        if (this.checkScreenSize()) {
 	            this.$content.bind('scroll', _import2['default'].bind(this.infinitScroll, this));
 	        } else {
@@ -13493,22 +13483,25 @@
 
 	var _Backbone2 = _interopRequireDefault(_Backbone);
 
-	var _Item = __webpack_require__(7);
+	var _Item = __webpack_require__(6);
 
 	var _Item2 = _interopRequireDefault(_Item);
 
 	var BB = _Backbone2['default'].Collection.extend({
 
 	    model: _Item2['default'],
-	    url: '/data/items.json'
+	    url: '/data/items.json',
+
+	    initialize: function initialize() {
+	        this.fetch({ reset: true });
+	    }
 	});
 
 	exports['default'] = new BB();
 	module.exports = exports['default'];
 
 /***/ },
-/* 6 */,
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13533,139 +13526,10 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _interopRequireWildcard = function (obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (typeof obj === 'object' && obj !== null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } };
-
-	var _interopRequireDefault = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
-
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
-
-	var _$ = __webpack_require__(3);
-
-	var _$2 = _interopRequireDefault(_$);
-
-	var _import = __webpack_require__(2);
-
-	var _import2 = _interopRequireDefault(_import);
-
-	var _import3 = __webpack_require__(1);
-
-	var Backbone = _interopRequireWildcard(_import3);
-
-	var _itemTemplate = __webpack_require__(9);
-
-	var _itemTemplate2 = _interopRequireDefault(_itemTemplate);
-
-	var _Common = __webpack_require__(10);
-
-	var _Common2 = _interopRequireDefault(_Common);
-
-	exports['default'] = Backbone.View.extend({
-
-	    tagName: 'div',
-
-	    el: '#content',
-
-	    className: 'gallery-elem-container pull-left',
-
-	    template: _import2['default'].template(_itemTemplate2['default']),
-
-	    events: {},
-
-	    initialize: function initialize() {
-	        console.log(this.model);
-	        this.listenTo(this.model, 'change', this.render);
-	    },
-
-	    render: function render() {
-	        alert('!');
-	        this.el.html(this.template);
-	        //this.$el.toggleClass('completed', this.model.get('completed'));
-
-	        //this.toggleVisible();
-	        //this.$taskDescription = this.$('.edit');
-	        return this;
-	        //return this.template;
-	    }
-	});
-	module.exports = exports['default'];
-
-/***/ },
-/* 9 */
+/* 7 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"gallery-elem-container pull-left\">\r\n    <div class=\"gallery-elem center-block\">\r\n        <img src=\"/public/images/img1.jpg\" alt=\"img1\"/>\r\n        <div class=\"rate text-center\">\r\n            <span class=\"star black-star inline-block\"></span>\r\n            <span class=\"star black-star inline-block\"></span>\r\n            <span class=\"star black-star inline-block\"></span>\r\n            <span class=\"star inline-block\"></span>\r\n            <span class=\"star inline-block\"></span>\r\n        </div>\r\n        <%=this%>\r\n        <h6 class=\"item-title text-center font-light\">NEW ZEALAND TIMELAPSE</h6>\r\n        <p class=\"item-description\">\r\n            Equip? de son appareil Canon 5D Mark II, le r?alis\r\n            ateur Bevan Percival nous offre une nouvelle vid?o\r\n            en  technique timelapse absolument magnifique\r\n        </p>\r\n    </div>\r\n</div>";
-
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
-
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
-	    return {
-	        TodoFilter: '',
-	        ENTER_KEY: 13,
-	        ESCAPE_KEY: 27
-	    };
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 11 */
-/***/ function(module, exports) {
-
-	module.exports = "<div class=\"pull-left\">\r\n    <ul id=\"filters\" class=\"list-inline\">\r\n        <li class=\"list-group-item\">\r\n            <a class=\"selected\" href=\"#/\">All</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n            <a href=\"#/active\">Opened</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n            <a href=\"#/completed\">Pending</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n            <a href=\"#/completed\">Completed</a>\r\n        </li>\r\n    </ul>\r\n</div>\r\n<div class=\"pull-right\">\r\n    <% if ( completed ) { %>\r\n    <button id=\"clear-completed\" class=\"btn btn-danger\">Hide</button>\r\n    <% } %>\r\n</div>";
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _interopRequireWildcard = function (obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (typeof obj === 'object' && obj !== null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } };
-
-	var _interopRequireDefault = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
-
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
-
-	var _$ = __webpack_require__(3);
-
-	var _$2 = _interopRequireDefault(_$);
-
-	var _import = __webpack_require__(2);
-
-	var _import2 = _interopRequireDefault(_import);
-
-	var _import3 = __webpack_require__(1);
-
-	var Backbone = _interopRequireWildcard(_import3);
-
-	var _Todos = __webpack_require__(5);
-
-	var _Todos2 = _interopRequireDefault(_Todos);
-
-	var _Common = __webpack_require__(10);
-
-	var _Common2 = _interopRequireDefault(_Common);
-
-	exports['default'] = Backbone.Router.extend({
-	    routes: {
-	        '/': 'initList'
-	    },
-
-	    initList: function initList() {
-	        List.fetch({ reset: true });
-	    }
-	});
-	module.exports = exports['default'];
+	module.exports = "<%_.each(this.collection, function(model){%>\r\n<div class=\"gallery-elem-container pull-left\">\r\n    <div class=\"gallery-elem center-block\">\r\n        <img src=\"<%=model.image%>\" alt=\"img1\"/>\r\n        <div class=\"rate text-center\">\r\n            <span class=\"star black-star inline-block\"></span>\r\n            <span class=\"star black-star inline-block\"></span>\r\n            <span class=\"star black-star inline-block\"></span>\r\n            <span class=\"star inline-block\"></span>\r\n            <span class=\"star inline-block\"></span>\r\n        </div>\r\n        <h6 class=\"item-title text-center font-light\"><%=model.title%></h6>\r\n        <p class=\"item-description\"><%=model.paragraph%></p>\r\n    </div>\r\n</div>\r\n<%})%>";
 
 /***/ }
 /******/ ]);

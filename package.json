@@ -1,5 +1,5 @@
 {
-  "name": "TaskManager",
+  "name": "Landing",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -7,10 +7,7 @@
   },
   "author": "drafter911@gmail.com",
   "dependencies": {
-    "backbone.intercept": "^0.4.2",
-    "backbone.localstorage": "~1.1.16",
-    "backbone.marionette": "^2.4.4",
-    "backbone.radio": "~0.6.0",
+    "backbone": "^1.3.1",
     "body-parser": "~1.13.2",
     "cookie-parser": "~1.3.5",
     "debug": "~2.2.0",
